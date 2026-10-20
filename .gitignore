@@ -1,6 +1,7 @@
 # Environment variables and secrets
 .env
 .env.*
+!.env.example
 
 # Virtual environment
 .venv/
@@ -13,3 +14,4 @@ __pycache__/
 # Generated artifacts
 artifacts/*
 !artifacts/.gitkeep
+!artifacts/*.png

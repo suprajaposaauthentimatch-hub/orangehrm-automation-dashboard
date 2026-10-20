@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OrangeHRM Automation Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero"><div class="brand-mark">OH</div><div><p class="eyebrow">RPA PRACTICAL ASSIGNMENT</p><h1>OrangeHRM automation</h1><p class="subheading">Run a guided employee workflow from this dashboard.</p></div></header>
+    <section class="notice"><strong>Demo site</strong><span>opensource-demo.orangehrmlive.com · Enter credentials for this environment below.</span></section>
+    <form class="panel form-grid" method="post" action="/run">
+      <div class="section-title"><span class="step">01</span><div><h2>Login credentials</h2><p>Credentials are used for this run only and are not saved.</p></div></div>
+      <label>Username<input name="username" required autocomplete="username" value="{{ form.get('username','') }}" placeholder="OrangeHRM username"></label>
+      <label>Password<input type="password" name="password" required autocomplete="current-password" placeholder="OrangeHRM password"></label>
+      <div class="section-title employee-title"><span class="step">02</span><div><h2>New employee</h2><p>Enter the details to add to PIM.</p></div></div>
+      <label>First name<input name="first_name" required maxlength="100" value="{{ form.get('first_name','') }}" placeholder="First name"></label>
+      <label>Last name<input name="last_name" required maxlength="100" value="{{ form.get('last_name','') }}" placeholder="Last name"></label>
+      <label class="full">Employee ID<input name="employee_id" required maxlength="30" value="{{ form.get('employee_id','') }}" placeholder="Unique employee ID"></label>
+      <div class="full submit-row"><p>Browser automation can take a minute. Keep this page open while it runs.</p><button type="submit">Run automation <span aria-hidden="true">→</span></button></div>
+    </form>
+    {% if result %}
+    <section class="panel result {{ result.status }}" aria-live="polite">
+      <div class="result-head"><div><p class="eyebrow">RUN RESULT</p><h2>{{ 'Automation succeeded' if result.status == 'success' else 'Automation needs attention' }}</h2></div><span class="badge">{{ result.status|upper }}</span></div>
+      <p class="message">{{ result.message }}</p>
+      {% if result.steps %}<h3>Completed steps</h3><ol class="steps">{% for step in result.steps %}<li>{{ step }}</li>{% endfor %}</ol>{% endif %}
+      <h3>Employee submitted</h3><div class="employee-summary"><span><small>First name</small>{{ result.inserted.first_name }}</span><span><small>Last name</small>{{ result.inserted.last_name }}</span><span><small>Employee ID</small>{{ result.inserted.employee_id }}</span></div>
+      {% if result.employees %}<h3>Extracted employee rows (up to 100)</h3><div class="table-wrap"><table><thead><tr><th>Employee ID</th><th>First name</th><th>Middle name</th><th>Last name</th></tr></thead><tbody>{% for e in result.employees %}<tr><td>{{ e.employee_id }}</td><td>{{ e.first_name }}</td><td>{{ e.middle_name }}</td><td>{{ e.last_name }}</td></tr>{% endfor %}</tbody></table></div>{% endif %}
+      {% if result.csv_path or result.xlsx_path %}<p class="exports">Exports saved in <code>artifacts/</code>: {% if result.csv_path %}CSV{% endif %}{% if result.csv_path and result.xlsx_path %} · {% endif %}{% if result.xlsx_path %}Excel workbook{% endif %}</p>{% endif %}
+      <p class="footnote">Dashboard before/after screenshots and OrangeHRM browser screenshots are saved under <code>artifacts/</code>.</p>
+    </section>{% endif %}
+    <footer>Built with FastAPI · Python · Selenium</footer>
+  </main>
+</body>
+</html>
